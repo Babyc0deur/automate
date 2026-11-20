@@ -1,0 +1,35 @@
+name: Daily Outlook & cPanel Briefing
+
+on:
+  schedule:
+    # Exécution tous les jours à 07:00 UTC (ajustez selon votre fuseau horaire)
+    - cron: "0 7 * * *"
+  workflow_dispatch: {} # Permet aussi de lancer un test manuel en 1 clic
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run briefing script
+        env:
+          OUTLOOK_IMAP_HOST: ${{ secrets.OUTLOOK_IMAP_HOST }}
+          OUTLOOK_EMAIL: ${{ secrets.OUTLOOK_EMAIL }}
+          OUTLOOK_APP_PASSWORD: ${{ secrets.OUTLOOK_APP_PASSWORD }}
+          CPANEL_URL: ${{ secrets.CPANEL_URL }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: python briefing.py
